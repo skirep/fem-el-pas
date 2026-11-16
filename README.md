@@ -1,12 +1,16 @@
-# Fem el Pas — Android
+# Fem el Pas — web app
 
-Aplicació Android nativa en català per gestionar un protocol de reparació de sis passos, registrar discussions i reprendre converses pendents.
+Aplicació web responsive en català amb autenticació Supabase (Google o enllaç per correu), anotacions personals i sincronització protegida amb Row Level Security.
 
-## Compilació
-Java 17, Android SDK 35, Gradle 8.9. Executa `gradle :app:assembleDebug` o utilitza GitHub Actions > Build Android APK. L'APK debug es publica com a artifact de l'execució.
+## URL
+https://skirep.github.io/fem-el-pas/ (després d'activar Pages i desplegar).
 
-## Privacitat
-Les dades es desen localment a SharedPreferences, sense xifratge específic de l'aplicació. No es demana permís d'Internet ni s'activa la còpia de seguretat. Evita dades especialment sensibles fins a incorporar xifratge i bloqueig biomètric.
+## Configuració obligatòria
+1. A Supabase, executa `supabase/schema.sql` des del SQL Editor.
+2. A `config.js`, introdueix el **Project URL** i la clau pública **publishable/anon** del projecte. Mai una clau `service_role` ni secreta.
+3. A Supabase Authentication → URL Configuration, configura Site URL i Redirect URLs: `https://skirep.github.io/fem-el-pas/`.
+4. Habilita el proveïdor Google i configura OAuth al Google Cloud Console amb el callback indicat per Supabase; o utilitza login per enllaç al correu (configura el proveïdor Email).
+5. A GitHub → Settings → Pages, selecciona **GitHub Actions** com a font de desplegament. El workflow `pages.yml` publica el contingut de `main`.
 
-## Estat
-Versió inicial, compilació pendent de verificació a GitHub Actions. No inclou notificacions ni sincronització.
+## Seguretat i limitacions
+La taula té RLS amb polítiques per usuari; no emmagatzemis dades sensibles fins a validar-ho al teu projecte. El repositori és públic i les claus del client són visibles: només hi ha d'haver claus públiques. Les dades es desen a Supabase, no a GitHub. La sessió persisteix al navegador; tanca-la als dispositius compartits. No hi ha xifratge d'extrem a extrem ni migració automàtica de les dades Android. No s'ha validat encara el login real ni la compilació de Pages.
