@@ -6,9 +6,9 @@ Aplicació web responsive en català amb autenticació Supabase (Google o enlla�
 https://skirep.github.io/fem-el-pas/ (després d'activar Pages i desplegar).
 
 ## Configuració obligatòria
-1. A Supabase, executa `supabase/schema.sql` des del SQL Editor.
-2. A `config.js`, introdueix el **Project URL** i la clau pública **publishable/anon** del projecte. Mai una clau `service_role` ni secreta.
-3. A Supabase Authentication → URL Configuration, configura Site URL i Redirect URLs: `https://skirep.github.io/fem-el-pas/`.
+1. Al projecte Supabase de Lletrimon (Lletrix al panell), executa `supabase/schema.sql` des del SQL Editor. El fitxer crea `public.fempas_entries` o reanomena l’antiga taula si ja existeix al mateix projecte.
+2. A `config.js`, hi ha l’URL i la clau publicable de Lletrimon. Mai una clau `service_role` ni secreta.
+3. A Supabase Authentication → URL Configuration, afegeix `https://skirep.github.io/fem-el-pas/` a Redirect URLs i conserva la Site URL de Lletrimon.
 4. Habilita el proveïdor Google i configura OAuth al Google Cloud Console amb el callback indicat per Supabase; o utilitza login per enllaç al correu (configura el proveïdor Email).
 5. A GitHub → Settings → Pages, selecciona **GitHub Actions** com a font de desplegament. El workflow `pages.yml` publica el contingut de `main`.
 

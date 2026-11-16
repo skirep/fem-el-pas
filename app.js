@@ -12,13 +12,13 @@ function view(which){['setup-view','auth-view','dashboard'].forEach(id=>show(id,
 function init(){
  $('today').textContent=new Intl.DateTimeFormat('ca-ES',{day:'numeric',month:'long',year:'numeric'}).format(new Date());
  if(!configured){view('setup-view');return;}
- db=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+ db=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{storageKey:'fempas-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
  db.auth.onAuthStateChange((_event,session)=>{const next=session?.user||null;if(next?.id!==user?.id){user=next;entries=[];if(user){view('dashboard');setTimeout(loadEntries,0)}else view('auth-view')}});
  db.auth.getSession().then(({data,error})=>{if(error)message('auth-message',safeError(error),true);user=data?.session?.user||null;if(user){view('dashboard');loadEntries()}else view('auth-view')});
 }
 async function loadEntries(){
  if(!user)return;
- const {data,error}=await db.from('fem_el_pas_entries').select('id,kind,title,what,felt,own,next,done,created_at').order('created_at',{ascending:false}).limit(200);
+ const {data,error}=await db.from('fempas_entries').select('id,kind,title,what,felt,own,next,done,created_at').order('created_at',{ascending:false}).limit(200);
  if(error){$('entry-list').textContent='Error carregant les anotacions: '+safeError(error);return;}
  entries=data||[];render();
 }
@@ -49,7 +49,7 @@ async function save(e){
  if(!payload.title){message('form-message','Escriu un títol.',true);return;}
  const btn=$('entry-form').querySelector('[type=submit]');btn.disabled=true;
  try{
-  const q=editing?db.from('fem_el_pas_entries').update(payload).eq('id',editing).eq('user_id',user.id):db.from('fem_el_pas_entries').insert(payload);
+  const q=editing?db.from('fempas_entries').update(payload).eq('id',editing).eq('user_id',user.id):db.from('fempas_entries').insert(payload);
   const {error}=await q;if(error)throw error;
   $('editor').close();await loadEntries();
  }catch(err){message('form-message',safeError(err),true)}
@@ -57,7 +57,7 @@ async function save(e){
 }
 async function remove(){
  if(!editing||!user||!confirm('Vols eliminar definitivament aquesta anotació?'))return;
- const {error}=await db.from('fem_el_pas_entries').delete().eq('id',editing).eq('user_id',user.id);
+ const {error}=await db.from('fempas_entries').delete().eq('id',editing).eq('user_id',user.id);
  if(error){message('form-message',safeError(error),true);return;}
  $('editor').close();await loadEntries();
 }
