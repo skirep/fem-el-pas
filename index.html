@@ -1,11 +1,95 @@
 <!doctype html>
-<html lang="ca"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#153d40"><meta name="description" content="Un espai privat per reflexionar, reparar i avançar."><title>Fem el Pas</title><link rel="stylesheet" href="./styles.css"></head>
-<body><div id="app">
-<header class="top"><a class="brand" href="./"><span class="brand-icon">✳</span><span>fem<span class="brand-light">el</span>pas<span class="brand-dot">.</span></span></a><div class="top-right"><span class="secure">◈ Espai personal</span><button id="logout" class="ghost hidden">Tancar sessió</button></div></header>
-<main>
-<section id="setup-view" class="center hidden"><div class="auth-card"><div class="eyebrow">CONFIGURACIÓ INICIAL</div><h1>Connecta el teu espai</h1><p>Cal configurar Supabase per activar l'inici de sessió i la sincronització. Consulta el README del repositori.</p><div class="notice">No introdueixis mai una clau <code>service_role</code> a la web.</div></div></section>
-<section id="auth-view" class="auth-layout hidden"><div class="auth-intro"><div class="eyebrow">UN ESPAI PER AVANÇAR</div><h1>Les coses importants mereixen <em>un pas endavant.</em></h1><p>Un lloc tranquil per ordenar el que sents, assumir la teva part i no deixar converses importants a mitges.</p><div class="auth-points"><div><span>01</span> Reflexiona amb calma</div><div><span>02</span> Prepara una conversa</div><div><span>03</span> Fes seguiment dels compromisos</div></div><p class="privacy-line">✧ Les teves anotacions només són accessibles amb el teu compte.</p></div><div class="auth-card"><div class="eyebrow">BENVINGUT/DA</div><h2>El teu espai comença aquí.</h2><p>Entra per accedir a les teves reflexions i converses pendents.</p><form id="login-form"><label for="email">Correu electrònic</label><input id="email" type="email" placeholder="tu@exemple.com" required autocomplete="email"><button class="primary full" type="submit">Envia'm un enllaç per entrar <span>↗</span></button></form><div class="divider-text">o bé</div><button id="google-login" class="secondary full">Continuar amb Google</button><p id="auth-message" class="message" role="status"></p><p class="fineprint">L'enllaç d'accés arribarà al teu correu. No cal contrasenya.</p></div></section>
-<section id="dashboard" class="dashboard hidden"><div class="dashboard-head"><div><div class="eyebrow">EL TEU ESPAI · <span id="today"></span></div><h1>Un pas cada vegada<span class="brand-dot">.</span></h1><p>Avançar no és fer-ho perfecte. És tornar-hi amb intenció.</p></div><div class="avatar" id="avatar">✳</div></div><div class="stats"><div class="stat"><span>CONVERSES PENDENTS</span><strong id="pending-count">0</strong></div><div class="stat"><span>CONVERSES TANCADES</span><strong id="closed-count">0</strong></div><div class="stat"><span>REFLEXIONS</span><strong id="reflection-count">0</strong></div></div><div class="layout"><div class="maincol"><article class="hero-card"><div class="eyebrow">COMENCEM?</div><h2>Hi ha alguna cosa que necessitis posar en ordre?</h2><p>Escriu el que ha passat, què has sentit i quin petit pas pots fer ara.</p><button id="new-entry" class="light-button">Començar una reflexió <span>↗</span></button><div class="hero-decoration">✳</div></article><div class="section-head"><h2>Les teves anotacions</h2><div class="filters"><button class="filter active" data-filter="all">Totes</button><button class="filter" data-filter="pending">Pendents</button><button class="filter" data-filter="closed">Tancades</button></div></div><div id="entry-list" class="entry-list"></div></div><aside><article class="aside-card"><div class="eyebrow">UNA GUIA PER TORNAR-HI</div><h3>Els 6 passos per reparar</h3><ol id="steps"><li>Atura't i calma't</li><li>Entén què ha passat</li><li>Pren la iniciativa</li><li>Escolta sense defensar-te</li><li>Repara amb fets</li><li>Fes seguiment</li></ol><p>No és una fórmula per obtenir perdó, sinó una guia per assumir la teva part.</p></article><article class="aside-card gentle"><div class="eyebrow">RECORDA</div><p>“Puc reconèixer el que sento sense convertir-ho en una excusa per com he actuat.”</p></article></aside></div></section>
-</main><footer>Fem el Pas · Un espai privat per avançar, al teu ritme.</footer></div>
-<dialog id="editor"><form id="entry-form"><div class="modal-head"><div><div class="eyebrow">EL TEU ESPAI</div><h2 id="editor-title">Nova anotació</h2></div><button type="button" id="close-editor" class="icon-button" aria-label="Tancar">×</button></div><label for="kind">Tipus</label><select id="kind"><option value="conversation">Conversa</option><option value="reflection">Reflexió personal</option></select><label for="title">Títol</label><input id="title" maxlength="120" placeholder="Què vols recordar?" required><label for="what">Què ha passat?</label><textarea id="what" rows="3" placeholder="Descriu els fets sense buscar culpables..."></textarea><label for="felt">Què he sentit?</label><textarea id="felt" rows="3" placeholder="Com m'he sentit i com he reaccionat?"></textarea><label for="own">Quina part em correspon?</label><textarea id="own" rows="3" placeholder="Què puc reconèixer o fer diferent?"></textarea><label for="next">Quin serà el següent pas?</label><textarea id="next" rows="3" placeholder="Una acció concreta, sense pressionar ningú..."></textarea><label class="check"><input type="checkbox" id="done"> Ja no tinc cap acció pendent</label><p id="form-message" class="message" role="status"></p><div class="modal-actions"><button type="button" id="delete-entry" class="danger hidden">Eliminar</button><button type="submit" class="primary">Desar anotació</button></div></form></dialog>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="./config.js"></script><script src="./app.js"></script></body></html>
+<html lang="ca">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f8f5">
+  <meta name="description" content="Un espai privat per a les teves converses i reflexions.">
+  <title>Fem el Pas</title>
+  <link rel="stylesheet" href="./styles.css?v=2">
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <a class="brand" href="./">Fem el Pas</a>
+      <button id="logout" class="ghost hidden" type="button">Tancar sessió</button>
+    </div>
+  </header>
+  <main>
+    <section id="setup-view" class="auth-card hidden">
+      <h1>Servei sense configurar</h1>
+      <p>Cal configurar Supabase per iniciar sessió. Consulta el README del repositori.</p>
+    </section>
+    <section id="auth-view" class="auth-card hidden">
+      <h1>Entra a Fem el Pas</h1>
+      <p>T’enviarem un enllaç per accedir a les teves anotacions.</p>
+      <form id="login-form">
+        <label for="email">Correu electrònic</label>
+        <input id="email" type="email" required autocomplete="email" autocapitalize="off">
+        <button class="primary full" type="submit">Envia’m l’enllaç</button>
+      </form>
+      <button id="google-login" class="secondary full hidden" type="button">Continua amb Google</button>
+      <p id="auth-message" class="message" role="status"></p>
+    </section>
+    <section id="dashboard" class="hidden">
+      <div class="dashboard-head">
+        <h1>Anotacions</h1>
+        <button id="new-entry" class="primary" type="button">+ Nova anotació</button>
+      </div>
+      <div class="filters" role="group" aria-label="Filtra les anotacions">
+        <button class="filter active" type="button" data-filter="all" aria-pressed="true">Totes</button>
+        <button class="filter" type="button" data-filter="pending" aria-pressed="false">Pendents</button>
+        <button class="filter" type="button" data-filter="closed" aria-pressed="false">Tancades</button>
+      </div>
+      <div id="entry-list" class="entry-list" aria-live="polite"></div>
+      <details class="guide">
+        <summary>Guia per reprendre una conversa</summary>
+        <ol>
+          <li>Atura’t i calma’t</li>
+          <li>Entén què ha passat</li>
+          <li>Pren la iniciativa</li>
+          <li>Escolta sense defensar-te</li>
+          <li>Repara amb fets</li>
+          <li>Fes seguiment</li>
+        </ol>
+      </details>
+    </section>
+  </main>
+  <dialog id="editor" aria-labelledby="editor-title">
+    <form id="entry-form">
+      <div class="modal-head">
+        <h2 id="editor-title">Nova anotació</h2>
+        <button type="button" id="close-editor" class="ghost" autofocus>Tancar</button>
+      </div>
+      <div class="modal-fields">
+        <label for="title">Títol</label>
+        <input id="title" maxlength="120" required>
+        <label for="kind">Tipus</label>
+        <select id="kind">
+          <option value="conversation">Conversa</option>
+          <option value="reflection">Reflexió personal</option>
+        </select>
+        <label for="what">Què ha passat?</label>
+        <textarea id="what" rows="2"></textarea>
+        <label for="felt">Què he sentit?</label>
+        <textarea id="felt" rows="2"></textarea>
+        <label for="own">Quina part em correspon?</label>
+        <textarea id="own" rows="2"></textarea>
+        <label for="next">Quin és el següent pas?</label>
+        <textarea id="next" rows="2"></textarea>
+        <label class="check"><input type="checkbox" id="done"> Ja no tinc cap acció pendent</label>
+      </div>
+      <div class="modal-footer">
+        <p id="form-message" class="message" role="status"></p>
+        <div class="modal-actions">
+          <button type="button" id="delete-entry" class="danger hidden">Eliminar</button>
+          <button type="submit" class="primary">Desar anotació</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="./config.js"></script>
+  <script src="./app.js?v=2"></script>
+</body>
+</html>

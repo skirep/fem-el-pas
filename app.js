@@ -10,7 +10,8 @@ const message=(id,text,error=false)=>{ $(id).textContent=text; $(id).classList.t
 const safeError=e=>e?.message||'No s’ha pogut completar l’operació.';
 function view(which){['setup-view','auth-view','dashboard'].forEach(id=>show(id,id===which));show('logout',which==='dashboard');}
 function init(){
- $('today').textContent=new Intl.DateTimeFormat('ca-ES',{day:'numeric',month:'long',year:'numeric'}).format(new Date());
+
+ show('google-login',cfg.googleLoginEnabled===true);
  if(!configured){view('setup-view');return;}
  db=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{storageKey:'fempas-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
  db.auth.onAuthStateChange((_event,session)=>{const next=session?.user||null;if(next?.id!==user?.id){user=next;entries=[];if(user){view('dashboard');setTimeout(loadEntries,0)}else view('auth-view')}});
@@ -23,12 +24,12 @@ async function loadEntries(){
  entries=data||[];render();
 }
 function render(){
- $('pending-count').textContent=entries.filter(e=>e.kind==='conversation'&&!e.done).length;
- $('closed-count').textContent=entries.filter(e=>e.kind==='conversation'&&e.done).length;
- $('reflection-count').textContent=entries.filter(e=>e.kind==='reflection').length;
+
+
+
  const list=$('entry-list');list.replaceChildren();
  const selected=entries.filter(e=>filter==='all'||(filter==='pending'&&!e.done)||(filter==='closed'&&e.done));
- if(!selected.length){const empty=document.createElement('div');empty.className='empty';empty.textContent='Encara no hi ha anotacions en aquesta categoria. Pots començar amb una reflexió.';list.append(empty);return;}
+ if(!selected.length){const empty=document.createElement('div');empty.className='empty';empty.textContent='Encara no hi ha anotacions en aquesta vista.';list.append(empty);return;}
  for(const entry of selected){
   const btn=document.createElement('button');btn.type='button';btn.className='entry';
   const left=document.createElement('div'),name=document.createElement('strong'),date=document.createElement('small'),tag=document.createElement('span');
@@ -40,7 +41,7 @@ function render(){
 function openEditor(entry=null){
  editing=entry?.id||null;$('editor-title').textContent=entry?'Editar anotació':'Nova anotació';
  for(const key of keys)$(key).value=entry?.[key]|| (key==='kind'?'conversation':'');
- $('done').checked=Boolean(entry?.done);show('delete-entry',Boolean(entry));message('form-message','');$('editor').showModal();
+ $('done').checked=Boolean(entry?.done);show('delete-entry',Boolean(entry));message('form-message','');$('editor').showModal();$('editor').querySelector('.modal-fields').scrollTop=0;
 }
 async function save(e){
  e.preventDefault();if(!user)return;
@@ -72,6 +73,6 @@ $('new-entry').addEventListener('click',()=>openEditor());
 $('close-editor').addEventListener('click',()=>$('editor').close());
 $('entry-form').addEventListener('submit',save);
 $('delete-entry').addEventListener('click',remove);
-document.querySelectorAll('.filter').forEach(b=>b.addEventListener('click',()=>{filter=b.dataset.filter;document.querySelectorAll('.filter').forEach(x=>x.classList.toggle('active',x===b));render()}));
+document.querySelectorAll('.filter').forEach(b=>b.addEventListener('click',()=>{filter=b.dataset.filter;document.querySelectorAll('.filter').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',String(x===b))});render()}));
 init();
 })();
