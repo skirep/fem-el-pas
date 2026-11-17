@@ -34,7 +34,7 @@ function render(){
  for(const entry of selected){
   const btn=document.createElement('button');btn.type='button';btn.className='entry';
   const left=document.createElement('div'),name=document.createElement('strong'),date=document.createElement('small'),tag=document.createElement('span');
-  name.textContent=entry.title;date.textContent=new Intl.DateTimeFormat('ca-ES',{day:'numeric',month:'short',year:'numeric'}).format(new Date(entry.created_at))+' · '+(entry.kind==='reflection'?'Reflexió':'Conversa');
+  name.textContent=entry.title;date.textContent=new Intl.DateTimeFormat('ca-ES',{day:'numeric',month:'short',year:'numeric'}).format(new Date(entry.created_at))+' · '+(entry.kind==='reflection'?'Reflexió':'Conversa')+(entry.reminder_at?' · 🔔 '+new Intl.DateTimeFormat('ca-ES',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}).format(new Date(entry.reminder_at)):'');
   tag.className='tag'+(entry.done?' closed':'');tag.textContent=entry.done?'Tancada':'Pendent';
   left.append(name,date);btn.append(left,tag);btn.addEventListener('click',()=>openEditor(entry));list.append(btn);
  }
@@ -45,6 +45,8 @@ function openEditor(entry=null){
  form.elements.namedItem('kind').value=entry?.kind??'conversation';
  form.elements.namedItem('status').value=entry?.done?'closed':'pending';
  $('title').value=entry?.title??'';
+ $('reminder-at').value=entry?.reminder_at?toLocalDateTime(new Date(entry.reminder_at)):'';
+ show('calendar-export',Boolean(entry?.reminder_at));
  for(const key of noteFields)$(key).value=entry?.[key]??'';
  $('entry-details').open=noteFields.some(key=>Boolean(entry?.[key]));
  show('delete-entry',Boolean(entry));
@@ -58,7 +60,8 @@ async function save(e){
   user_id:user.id,
   kind:form.elements.namedItem('kind').value,
   done:form.elements.namedItem('status').value==='closed',
-  title:$('title').value.trim()
+  title:$('title').value.trim(),
+  reminder_at:$('reminder-at').value?new Date($('reminder-at').value).toISOString():null
  };
  for(const key of noteFields)payload[key]=$(key).value.trim();
  if(!payload.title){message('form-message','Escriu un títol.',true);return;}
@@ -88,5 +91,22 @@ $('close-editor').addEventListener('click',()=>$('editor').close());
 form.addEventListener('submit',save);
 $('delete-entry').addEventListener('click',remove);
 document.querySelectorAll('.filter').forEach(b=>b.addEventListener('click',()=>{filter=b.dataset.filter;document.querySelectorAll('.filter').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',String(x===b))});render()}));
+
+function toLocalDateTime(d){const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes());}
+function icsEscape(v){return String(v||'').replace(/\\/g,'\\\\').replace(/\r?\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');}
+function icsDate(d){return d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');}
+function exportCalendar(){
+ const e=entries.find(x=>x.id===editing);
+ if(!e?.reminder_at)return;
+ const start=new Date(e.reminder_at);
+ if(Number.isNaN(start.getTime()))return;
+ const end=new Date(start.getTime()+30*60*1000);
+ const description=[e.next,e.what].filter(Boolean).join('\n');
+ const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Fem el Pas//CA','CALSCALE:GREGORIAN','METHOD:PUBLISH','BEGIN:VEVENT','UID:'+e.id+'@fem-el-pas','DTSTAMP:'+icsDate(new Date()),'DTSTART:'+icsDate(start),'DTEND:'+icsDate(end),'SUMMARY:'+icsEscape(e.title),'DESCRIPTION:'+icsEscape(description),'BEGIN:VALARM','TRIGGER:-PT15M','ACTION:DISPLAY','DESCRIPTION:Recordatori de Fem el Pas','END:VALARM','END:VEVENT','END:VCALENDAR'];
+ const blob=new Blob([lines.join('\r\n')+'\r\n'],{type:'text/calendar;charset=utf-8'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='fem-el-pas-'+e.id.slice(0,8)+'.ics';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+$('calendar-export').addEventListener('click',exportCalendar);
+$('reminder-at').addEventListener('change',()=>{if(editing)show('calendar-export',false)});
 init();
 })();
