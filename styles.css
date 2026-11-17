@@ -243,3 +243,5 @@ dialog form {
   .dashboard-head .primary { width: 100%; }
   .auth-card { padding: 0; border: 0; background: transparent; }
 }
+
+.reminder-fields{margin:14px 0;padding:14px;border:1px solid #dce7df;border-radius:12px;background:#f8fbf8}.reminder-fields label{display:block;margin:0 0 9px;font-weight:650}.reminder-fields input{width:100%;min-height:44px}.reminder-help{font-size:12px;color:#61776e;line-height:1.5}.reminder-fields button{margin-top:8px;width:100%}
