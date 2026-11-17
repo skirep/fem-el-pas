@@ -2,11 +2,11 @@
 <html lang="ca">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
   <meta name="theme-color" content="#f6f8f5">
   <meta name="description" content="Un espai privat per a les teves converses i reflexions.">
   <title>Fem el Pas</title>
-  <link rel="stylesheet" href="./styles.css?v=2">
+  <link rel="stylesheet" href="./styles.css?v=3">
 </head>
 <body>
   <header class="top">
@@ -62,22 +62,33 @@
         <button type="button" id="close-editor" class="ghost" autofocus>Tancar</button>
       </div>
       <div class="modal-fields">
+        <fieldset class="choice-group">
+          <legend>Tipus</legend>
+          <div class="choices">
+            <label><input type="radio" name="kind" value="conversation" checked><span>Conversa</span></label>
+            <label><input type="radio" name="kind" value="reflection"><span>Reflexió</span></label>
+          </div>
+        </fieldset>
         <label for="title">Títol</label>
-        <input id="title" maxlength="120" required>
-        <label for="kind">Tipus</label>
-        <select id="kind">
-          <option value="conversation">Conversa</option>
-          <option value="reflection">Reflexió personal</option>
-        </select>
-        <label for="what">Què ha passat?</label>
-        <textarea id="what" rows="2"></textarea>
-        <label for="felt">Què he sentit?</label>
-        <textarea id="felt" rows="2"></textarea>
-        <label for="own">Quina part em correspon?</label>
-        <textarea id="own" rows="2"></textarea>
-        <label for="next">Quin és el següent pas?</label>
-        <textarea id="next" rows="2"></textarea>
-        <label class="check"><input type="checkbox" id="done"> Ja no tinc cap acció pendent</label>
+        <input id="title" maxlength="120" placeholder="Ex. Parlar amb calma" required>
+        <fieldset class="choice-group">
+          <legend>Estat</legend>
+          <div class="choices">
+            <label><input type="radio" name="status" value="pending" checked><span>Pendent</span></label>
+            <label><input type="radio" name="status" value="closed"><span>Tancada</span></label>
+          </div>
+        </fieldset>
+        <details id="entry-details" class="entry-details">
+          <summary>Afegir detalls <span class="optional">(opcional)</span></summary>
+          <label for="what">Què ha passat?</label>
+          <textarea id="what" rows="2"></textarea>
+          <label for="felt">Què he sentit?</label>
+          <textarea id="felt" rows="2"></textarea>
+          <label for="own">Quina part em correspon?</label>
+          <textarea id="own" rows="2"></textarea>
+          <label for="next">Quin és el següent pas?</label>
+          <textarea id="next" rows="2"></textarea>
+        </details>
       </div>
       <div class="modal-footer">
         <p id="form-message" class="message" role="status"></p>
@@ -90,6 +101,6 @@
   </dialog>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="./config.js"></script>
-  <script src="./app.js?v=2"></script>
+  <script src="./app.js?v=3"></script>
 </body>
 </html>

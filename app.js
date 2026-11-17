@@ -5,7 +5,8 @@ const show = (id,yes) => $(id).classList.toggle('hidden',!yes);
 const cfg=window.FEM_EL_PAS_CONFIG||{};
 const configured=Boolean(cfg.supabaseUrl && cfg.supabaseAnonKey && window.supabase);
 let db=null,user=null,entries=[],filter='all',editing=null;
-const keys=['kind','title','what','felt','own','next'];
+const noteFields=['what','felt','own','next'];
+const form=$('entry-form');
 const message=(id,text,error=false)=>{ $(id).textContent=text; $(id).classList.toggle('error',error); };
 const safeError=e=>e?.message||'No s’ha pogut completar l’operació.';
 function view(which){['setup-view','auth-view','dashboard'].forEach(id=>show(id,id===which));show('logout',which==='dashboard');}
@@ -39,16 +40,29 @@ function render(){
  }
 }
 function openEditor(entry=null){
- editing=entry?.id||null;$('editor-title').textContent=entry?'Editar anotació':'Nova anotació';
- for(const key of keys)$(key).value=entry?.[key]|| (key==='kind'?'conversation':'');
- $('done').checked=Boolean(entry?.done);show('delete-entry',Boolean(entry));message('form-message','');$('editor').showModal();$('editor').querySelector('.modal-fields').scrollTop=0;
+ editing=entry?.id||null;
+ $('editor-title').textContent=entry?'Editar anotació':'Nova anotació';
+ form.elements.namedItem('kind').value=entry?.kind??'conversation';
+ form.elements.namedItem('status').value=entry?.done?'closed':'pending';
+ $('title').value=entry?.title??'';
+ for(const key of noteFields)$(key).value=entry?.[key]??'';
+ $('entry-details').open=noteFields.some(key=>Boolean(entry?.[key]));
+ show('delete-entry',Boolean(entry));
+ message('form-message','');
+ $('editor').showModal();
+ $('editor').querySelector('.modal-fields').scrollTop=0;
 }
 async function save(e){
  e.preventDefault();if(!user)return;
- const payload={user_id:user.id,done:$('done').checked};
- for(const key of keys)payload[key]=$(key).value.trim();
+ const payload={
+  user_id:user.id,
+  kind:form.elements.namedItem('kind').value,
+  done:form.elements.namedItem('status').value==='closed',
+  title:$('title').value.trim()
+ };
+ for(const key of noteFields)payload[key]=$(key).value.trim();
  if(!payload.title){message('form-message','Escriu un títol.',true);return;}
- const btn=$('entry-form').querySelector('[type=submit]');btn.disabled=true;
+ const btn=form.querySelector('[type=submit]');btn.disabled=true;
  try{
   const q=editing?db.from('fempas_entries').update(payload).eq('id',editing).eq('user_id',user.id):db.from('fempas_entries').insert(payload);
   const {error}=await q;if(error)throw error;
@@ -71,7 +85,7 @@ $('google-login').addEventListener('click',async()=>{if(!db)return;const {error}
 $('logout').addEventListener('click',async()=>{if(db){await db.auth.signOut();user=null;entries=[];view('auth-view')}});
 $('new-entry').addEventListener('click',()=>openEditor());
 $('close-editor').addEventListener('click',()=>$('editor').close());
-$('entry-form').addEventListener('submit',save);
+form.addEventListener('submit',save);
 $('delete-entry').addEventListener('click',remove);
 document.querySelectorAll('.filter').forEach(b=>b.addEventListener('click',()=>{filter=b.dataset.filter;document.querySelectorAll('.filter').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',String(x===b))});render()}));
 init();
