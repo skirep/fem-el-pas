@@ -28,6 +28,8 @@ create table if not exists public.fempas_entries (
  done boolean not null default false,
  created_at timestamptz not null default now()
 );
+alter table public.fempas_entries add column if not exists reminder_at timestamptz;
+create index if not exists fempas_entries_user_reminder_idx on public.fempas_entries(user_id,reminder_at) where reminder_at is not null;
 create index if not exists fempas_entries_user_created_idx on public.fempas_entries(user_id,created_at desc);
 alter table public.fempas_entries enable row level security;
 revoke all on public.fempas_entries from anon;
