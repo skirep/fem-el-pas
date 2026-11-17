@@ -101,7 +101,7 @@ function exportCalendar(){
  const start=new Date(e.reminder_at);
  if(Number.isNaN(start.getTime()))return;
  const end=new Date(start.getTime()+30*60*1000);
- const description=[e.next,e.what].filter(Boolean).join('\n');
+ const description='Recordatori personal creat a Fem el Pas.';
  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Fem el Pas//CA','CALSCALE:GREGORIAN','METHOD:PUBLISH','BEGIN:VEVENT','UID:'+e.id+'@fem-el-pas','DTSTAMP:'+icsDate(new Date()),'DTSTART:'+icsDate(start),'DTEND:'+icsDate(end),'SUMMARY:'+icsEscape(e.title),'DESCRIPTION:'+icsEscape(description),'BEGIN:VALARM','TRIGGER:-PT15M','ACTION:DISPLAY','DESCRIPTION:Recordatori de Fem el Pas','END:VALARM','END:VEVENT','END:VCALENDAR'];
  const blob=new Blob([lines.join('\r\n')+'\r\n'],{type:'text/calendar;charset=utf-8'});
  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='fem-el-pas-'+e.id.slice(0,8)+'.ics';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
