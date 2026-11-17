@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f6f8f5">
   <meta name="description" content="Un espai privat per a les teves converses i reflexions.">
   <title>Fem el Pas</title>
-  <link rel="stylesheet" href="./styles.css?v=3">
+  <link rel="stylesheet" href="./styles.css?v=4">
 </head>
 <body>
   <header class="top">
@@ -78,6 +78,7 @@
             <label><input type="radio" name="status" value="closed"><span>Tancada</span></label>
           </div>
         </fieldset>
+        <div class="reminder-fields"><label for="reminder-at">Data i hora del recordatori <span class="optional">(opcional)</span></label><input id="reminder-at" type="datetime-local"><p class="reminder-help">Pots desar la data i afegir un avís al calendari del mòbil o ordinador.</p><button id="calendar-export" type="button" class="secondary hidden">Afegir al calendari (.ics)</button></div>
         <details id="entry-details" class="entry-details">
           <summary>Afegir detalls <span class="optional">(opcional)</span></summary>
           <label for="what">Què ha passat?</label>
@@ -101,6 +102,6 @@
   </dialog>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="./config.js"></script>
-  <script src="./app.js?v=3"></script>
+  <script src="./app.js?v=4"></script>
 </body>
 </html>
